@@ -1,0 +1,71 @@
+# Этот файл .gitignore должен быть помещен в корень каталога вашего проекта Unity
+#
+# Получите последнюю информацию с https://github.com/github/gitignore/blob/master/Unity.gitignore
+#
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+
+# MemoryCapture может стать чрезмерно большим.
+# Они также могут содержать чрезвычайно конфиденциальные данные
+/[ Мм ]emoryCaptures/
+
+# Метаданные актива следует игнорировать только тогда, когда игнорируется соответствующий актив
+!/[Aa]ssets/**/*.meta
+
+# Раскомментируйте эту строку, если хотите игнорировать плагин инструментов хранилища ресурсов
+# / [Aa] ssets / AssetStoreTools *
+
+# Автоматически созданный плагин Jetbrains Rider
+/[Aa]ssets/Plugins/Editor/JetBrains*
+
+# Каталог кеша Visual Studio
+.vs/
+
+# Каталог кеша Gradle
+.gradle/
+
+# Автоматически созданные файлы решений и проектов VS / MD / Consulo
+ExportedObj/
+.consulo/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Unity3D сгенерировал метафайлы
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# Unity3D сгенерировал файл отчетов о сбоях
+sysinfo.txt
+
+# Строит
+*.apk
+*.aab
+*.unitypackage
+
+# Файл, созданный Crashlytics
+crashlytics-build.properties
+
+# Упакованные адресации
+/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
+
+# Временные автоматически созданные активы Android
+/[Aa]ssets/[Ss]treamingAssets/aa.meta
+/[Aa]ssets/[Ss]treamingAssets/aa/*
