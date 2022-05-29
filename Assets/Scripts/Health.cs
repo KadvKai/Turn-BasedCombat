@@ -23,6 +23,8 @@ public class Health : MonoBehaviour
     public void TakeDamage(float damage)
     {
         _currentHealth -= damage;
+        _currentHealth = Mathf.Clamp(_currentHealth,0f, _startHealth);
+        HealthIndication();
         Damage.Invoke();
         if (_currentHealth<=0)
         {

@@ -1,0 +1,54 @@
+{
+    "name": "PlayerInput",
+    "maps": [
+        {
+            "name": "BaseInput",
+            "id": "ea0f3bcb-d734-42ad-807c-f6115d7c1266",
+            "actions": [
+                {
+                    "name": "Targeting",
+                    "type": "Value",
+                    "id": "46954c39-ccc2-4f41-a8a1-155e3aef84c3",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Selection",
+                    "type": "Button",
+                    "id": "5314df32-14f2-4999-8121-cd2e73af5ad5",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "ce3733b4-3e00-4cd4-bb4d-5bc3b8128675",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Targeting",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f4e8651b-893b-44bc-92b2-dc635f4dacc5",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Selection",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

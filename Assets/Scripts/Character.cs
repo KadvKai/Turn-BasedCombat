@@ -2,58 +2,112 @@ using Spine.Unity;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class Character : MonoBehaviour
 {
-    [SerializeField] private AnimationReferenceAsset _damage, _idle, _attack;
+    [SerializeField] private int _baseDamage=30;
+    [SerializeField] private AnimationReferenceAsset _damageAnimation, _idleAnimation, _attackAnimation;
+    [SerializeField] private EventDataReferenceAsset _hittEvent;
     [SerializeField] private Slider _currentHealthSlider;
-   
+    [SerializeField] private Color _visibleColor;
+    [SerializeField] private Color _hiddenColor;
+    [SerializeField] private float _hidingTime = 1;
+    private int _damage;
     private SkeletonAnimation _skeletonAnimation;
-    public Color freezeColor;
-    public Color freezeBlackColor;
-    public string colorProperty = "_Color";
-    public string blackTintProperty = "_Black";
+    private readonly string _colorProperty = "_Color";
     private MaterialPropertyBlock _block;
     private MeshRenderer _meshRenderer;
+    public bool CharacterActive { get; private set; }
+    public bool CharacterDead { get; private set; }
+    public event UnityAction<int> CharacterHitt;
 
-
+    private void Awake()
+    {
+        _damage = Random.Range((int)(_baseDamage * 0.9f), (int)(_baseDamage * 1.1f));//Урон персонажа +-10%
+        _block = new();
+        _skeletonAnimation = GetComponent<SkeletonAnimation>();
+        _meshRenderer = GetComponent<MeshRenderer>();
+    }
 
     private void Start()
     {
-        _block = new();
-        _skeletonAnimation = GetComponent<SkeletonAnimation>();
         StartCoroutine(TSAnimation());
-        _meshRenderer = GetComponent<MeshRenderer>();
-        Dead();
+        _skeletonAnimation.AnimationState.Event += AnimationState_Event;
+    }
+
+    private void OnDestroy()
+    {
+        _skeletonAnimation.AnimationState.Event -= AnimationState_Event;
     }
     private IEnumerator TSAnimation()
     {
-        _skeletonAnimation.timeScale = Random.Range(0.8f,1.2f);
+        _skeletonAnimation.timeScale = Random.Range(0.8f, 1.2f);
         yield return new WaitForSeconds(5f);
         _skeletonAnimation.timeScale = 1;
     }
 
-    public void Selected()
+    public void Targeting(bool targeting)
     {
-       
+        if (targeting)
+        {
+            _currentHealthSlider.gameObject.SetActive(true);
+        }
+        else
+        {
+            if (!CharacterActive) _currentHealthSlider.gameObject.SetActive(false);
+        }
     }
-    public void UnSelected()
-    {
 
+    public void Selection(bool selection)
+    {
+        _currentHealthSlider.gameObject.SetActive(selection);
+        CharacterActive = selection;
+    }
+    public void PreparingBattle(bool preparing) 
+    {
+        if (preparing) _meshRenderer.sortingLayerName = "Battle";
+        else _meshRenderer.sortingLayerName = "Default";
+    }
+    public void Battle()
+    {
+        _skeletonAnimation.AnimationState.SetAnimation(0, _attackAnimation, false);
+    }
+
+    private void AnimationState_Event(Spine.TrackEntry trackEntry, Spine.Event e)
+    {
+        if (e.Data == _hittEvent.EventData) CharacterHitt?.Invoke(_damage);
     }
 
     public void Dead()
     {
-        Debug.Log("dead");
-        _block.SetColor(colorProperty, freezeColor);
-        _block.SetColor(blackTintProperty, freezeBlackColor);
-        _meshRenderer.SetPropertyBlock(_block);
+        StartCoroutine(MaterialColorChange(_visibleColor, _hiddenColor));
+        CharacterDead=true;
+        Destroy(gameObject, _hidingTime);
     }
-
     public void Damage()
     {
-
+        _skeletonAnimation.AnimationState.SetAnimation(0, _damageAnimation, false);
+        _skeletonAnimation.AnimationState.AddAnimation(0,_idleAnimation,true,0);
     }
 
+    public void Hide(bool hide)
+    {
+        if (hide) StartCoroutine(MaterialColorChange(_visibleColor, _hiddenColor));
+        else StartCoroutine(MaterialColorChange(_hiddenColor, _visibleColor));
+    }
+    private IEnumerator MaterialColorChange(Color startColor, Color finishColor)
+    {
+        var time = _hidingTime;
+        Color color;
+        while (time > 0)
+        {
+            color = Color.Lerp(finishColor, startColor, time / _hidingTime);
+            _block.SetColor(_colorProperty, color);
+            _meshRenderer.SetPropertyBlock(_block);
+            yield return null;
+            time -= Time.deltaTime;
+        }
+    }
 }
