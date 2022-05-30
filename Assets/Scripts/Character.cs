@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class Character : MonoBehaviour
 {
-    [SerializeField] private int _baseDamage=30;
+    [SerializeField] private int _baseDamage = 30;
     [SerializeField] private AnimationReferenceAsset _damageAnimation, _idleAnimation, _attackAnimation;
     [SerializeField] private EventDataReferenceAsset _hittEvent;
     [SerializeField] private Slider _currentHealthSlider;
@@ -19,6 +19,7 @@ public class Character : MonoBehaviour
     private readonly string _colorProperty = "_Color";
     private MaterialPropertyBlock _block;
     private MeshRenderer _meshRenderer;
+    private bool CharacterSelection;
     public bool CharacterActive { get; private set; }
     public bool CharacterDead { get; private set; }
     public event UnityAction<int> CharacterHitt;
@@ -36,6 +37,7 @@ public class Character : MonoBehaviour
         StartCoroutine(TSAnimation());
         _skeletonAnimation.AnimationState.Event += AnimationState_Event;
     }
+
 
     private void OnDestroy()
     {
@@ -56,23 +58,26 @@ public class Character : MonoBehaviour
         }
         else
         {
-            if (!CharacterActive) _currentHealthSlider.gameObject.SetActive(false);
+            if (!CharacterSelection) _currentHealthSlider.gameObject.SetActive(false);
         }
     }
 
     public void Selection(bool selection)
     {
         _currentHealthSlider.gameObject.SetActive(selection);
-        CharacterActive = selection;
+        CharacterSelection = selection;
     }
-    public void PreparingBattle(bool preparing) 
+    public void PreparingBattle(bool preparing)
     {
         if (preparing) _meshRenderer.sortingLayerName = "Battle";
         else _meshRenderer.sortingLayerName = "Default";
     }
-    public void Battle()
+    public void Attack()
     {
         _skeletonAnimation.AnimationState.SetAnimation(0, _attackAnimation, false);
+        _skeletonAnimation.AnimationState.AddAnimation(0, _idleAnimation, true, 0);
+        CharacterActive = true;
+        _skeletonAnimation.AnimationState.Complete += AnimationState_Complete;
     }
 
     private void AnimationState_Event(Spine.TrackEntry trackEntry, Spine.Event e)
@@ -83,13 +88,15 @@ public class Character : MonoBehaviour
     public void Dead()
     {
         StartCoroutine(MaterialColorChange(_visibleColor, _hiddenColor));
-        CharacterDead=true;
+        CharacterDead = true;
         Destroy(gameObject, _hidingTime);
     }
     public void Damage()
     {
         _skeletonAnimation.AnimationState.SetAnimation(0, _damageAnimation, false);
-        _skeletonAnimation.AnimationState.AddAnimation(0,_idleAnimation,true,0);
+        _skeletonAnimation.AnimationState.AddAnimation(0, _idleAnimation, true, 0);
+        CharacterActive = true;
+        _skeletonAnimation.AnimationState.Complete += AnimationState_Complete;
     }
 
     public void Hide(bool hide)
@@ -109,5 +116,11 @@ public class Character : MonoBehaviour
             yield return null;
             time -= Time.deltaTime;
         }
+    }
+    private void AnimationState_Complete(Spine.TrackEntry trackEntry)
+    {
+        CharacterActive = false;
+        _skeletonAnimation.AnimationState.Complete -= AnimationState_Complete;
+
     }
 }

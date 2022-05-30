@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-[RequireComponent(typeof(Battlefield))]
 public class Enemy : MonoBehaviour
 {
-    private Battlefield _battlefield;
+    [SerializeField] private Battlefield _battlefield;
+    [SerializeField] float _timeSelection = 1;
     public event UnityAction<Character> SelectedCharacter;
-    private void Awake()
-    {
-        _battlefield = GetComponent<Battlefield>();
-    }
+
     private void OnEnable()
+    {
+        Invoke(nameof(SelectionCharacter), _timeSelection);
+    }
+
+    private void SelectionCharacter()
     {
         var character = _battlefield.PlayerCharacters[Random.Range(0, _battlefield.PlayerCharacters.Count)];
         SelectedCharacter?.Invoke(character);

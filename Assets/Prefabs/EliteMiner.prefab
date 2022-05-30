@@ -317,7 +317,7 @@ GameObject:
   - component: {fileID: 1724004382}
   - component: {fileID: 8342544890617710004}
   m_Layer: 0
-  m_Name: Miner
+  m_Name: EliteMiner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -352,7 +352,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 942c985542a34d24baf351b3eb627f91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _baseDamage: 30
+  _baseDamage: 50
   _damageAnimation: {fileID: 11400000, guid: adcc0c4a9957e03498797552c2036ca3, type: 2}
   _idleAnimation: {fileID: 11400000, guid: 41bccdce27a9d2d4e8b4046c1de38d29, type: 2}
   _attackAnimation: {fileID: 11400000, guid: 74b189ae859fa8144bddb28730431319, type: 2}
@@ -373,7 +373,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 702e4842cccc8374b8113fa58d39d2c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _baseHealth: 100
+  _baseHealth: 150
   _currentHealthSlider: {fileID: 7903387811975253568}
   _currentHealthText: {fileID: 6683386449514330717}
   Dead:
@@ -447,6 +447,18 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: e53030b497417254b981918b0624a9b2, type: 2}
+  - {fileID: 2100000, guid: 0d958b3b3b8d9624f957489be8508a59, type: 2}
+  - {fileID: 2100000, guid: e53030b497417254b981918b0624a9b2, type: 2}
+  - {fileID: 2100000, guid: 0d958b3b3b8d9624f957489be8508a59, type: 2}
+  - {fileID: 2100000, guid: e53030b497417254b981918b0624a9b2, type: 2}
+  - {fileID: 2100000, guid: 0d958b3b3b8d9624f957489be8508a59, type: 2}
+  - {fileID: 2100000, guid: e53030b497417254b981918b0624a9b2, type: 2}
+  - {fileID: 2100000, guid: 0d958b3b3b8d9624f957489be8508a59, type: 2}
+  - {fileID: 2100000, guid: e53030b497417254b981918b0624a9b2, type: 2}
+  - {fileID: 2100000, guid: 0d958b3b3b8d9624f957489be8508a59, type: 2}
+  - {fileID: 2100000, guid: e53030b497417254b981918b0624a9b2, type: 2}
+  - {fileID: 2100000, guid: 0d958b3b3b8d9624f957489be8508a59, type: 2}
+  - {fileID: 2100000, guid: e53030b497417254b981918b0624a9b2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -481,7 +493,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skeletonDataAsset: {fileID: 11400000, guid: 5e9cf0bf4669e9841b923e4ec6382613, type: 2}
-  initialSkinName: base
+  initialSkinName: elite
   initialFlipX: 0
   initialFlipY: 0
   separatorSlotNames: []
@@ -519,8 +531,8 @@ MonoBehaviour:
   customSlotMaterials: []
   customMaterialOverrides:
   - overrideDisabled: 1
-    originalMaterial: {fileID: 2100000, guid: e53030b497417254b981918b0624a9b2, type: 2}
-    replacementMaterial: {fileID: 2100000, guid: ca478393b408b804b947e3353484940d, type: 2}
+    originalMaterial: {fileID: 2100000, guid: 0d958b3b3b8d9624f957489be8508a59, type: 2}
+    replacementMaterial: {fileID: 2100000, guid: 9854e06fa01522145803bba5206b6bcf, type: 2}
   - overrideDisabled: 1
     originalMaterial: {fileID: 2100000, guid: eb4af424ffc8c8b4ba95635f3ff12083, type: 2}
     replacementMaterial: {fileID: 0}

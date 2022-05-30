@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-[RequireComponent(typeof(Player))]
-[RequireComponent(typeof(Enemy))]
 public class Battlefield : MonoBehaviour
 {
     [SerializeField] private Character[] _characterType;
@@ -18,25 +16,25 @@ public class Battlefield : MonoBehaviour
     [SerializeField] private SpriteRenderer _fog;
     [SerializeField] private Color _fogColor;
     [SerializeField] private float _timeFog = 1;
-    private Player _player;
-    private Enemy _enemy;
+    [SerializeField] private Player _player;
+    [SerializeField] private Enemy _enemy;
     private readonly List<Character> _charactersOnField = new();
+    private readonly List<Character> _charactersRound = new();
     private Character _attackingCharacter;
     private Character _defendingCharacter;
-    private readonly List<Character> _charactersRound = new();
     public List<Character> PlayerCharacters { get; private set; } = new();
     public List<Character> EnemyCharacters { get; private set; } = new();
 
     public UnityEvent NewRound = new();
     public UnityEvent<bool> PlayerTurn = new();
+    public UnityEvent<bool> PlayerWin = new();
     private void Awake()
     {
-        _player = GetComponent<Player>();
-        _enemy = GetComponent<Enemy>();
         foreach (var position in _playerPosition)
         {
             var characterType = _characterType[Random.Range(0, _characterType.Length)];
             var character = Instantiate(characterType, position.position, Quaternion.identity);
+            character.name = "Player" + position.position.x;
             _charactersOnField.Add(character);
             PlayerCharacters.Add(character);
         }
@@ -44,6 +42,7 @@ public class Battlefield : MonoBehaviour
         {
             var characterType = _characterType[Random.Range(0, _characterType.Length)];
             var character = Instantiate(characterType, position.position, Quaternion.identity);
+            character.name = "Enemy" + position.position.x;
             character.GetComponent<SkeletonAnimation>().Skeleton.ScaleX = -1f;
             _charactersOnField.Add(character);
             EnemyCharacters.Add(character);
@@ -55,6 +54,7 @@ public class Battlefield : MonoBehaviour
     }
     private void StateSelection()
     {
+        if (_player == null || _enemy == null) return;
         if (_charactersRound.Count == 0)
         {
             _charactersRound.AddRange(_charactersOnField);
@@ -110,12 +110,14 @@ public class Battlefield : MonoBehaviour
 
     private IEnumerator Battle()
     {
-        _attackingCharacter.Battle();
+        _attackingCharacter.Attack();
         yield return new WaitForSeconds(_timeBattle);
     }
 
     private IEnumerator EndBattle()
     {
+        yield return new WaitWhile(() => _attackingCharacter.CharacterActive);
+        yield return new WaitWhile(() => _defendingCharacter.CharacterActive);
         _attackingCharacter.CharacterHitt -= AttackingCharacter_CharacterHitt;
         _attackingCharacter.Selection(false);
         _defendingCharacter.Selection(false);
@@ -142,6 +144,7 @@ public class Battlefield : MonoBehaviour
                 defendingCharacterPosition = _playerPosition[defendingCharacterIndext].position;
             }
         }
+
         if (!_defendingCharacter.CharacterDead) StartCoroutine(MovementCharacter(_defendingCharacter, defendingCharacterPosition));
         else yield return StartCoroutine(CharacterDead(_defendingCharacter));
         yield return StartCoroutine(MovementCharacter(_attackingCharacter, attackingCharacterPosition));
@@ -192,15 +195,23 @@ public class Battlefield : MonoBehaviour
     {
         _player.enabled = false;
         _player.SelectedCharacter -= PlayerSelectedCharacter;
-        character.Selection(true);
-        _defendingCharacter = character;
-        StartCoroutine(StateBattle());
+        if (character != null)
+        {
+            character.Selection(true);
+            _defendingCharacter = character;
+            StartCoroutine(StateBattle());
+        }
+        else
+        {
+            _attackingCharacter.Selection(false);
+            StateSelection();
+        }
     }
 
     private IEnumerator CharacterDead(Character character)
     {
-        yield return character == null;
         _charactersOnField.Remove(character);
+        _charactersRound.Remove(character);
         if (PlayerCharacters.Contains(character))
         {
             PlayerCharacters.Remove(character);
@@ -221,6 +232,19 @@ public class Battlefield : MonoBehaviour
                 StartCoroutine(MovementCharacter(enemyCharacter, enemyCharacterPosition));
             }
         }
+        if (PlayerCharacters.Count == 0)
+        {
+            PlayerWin.Invoke(false);
+            Destroy(_player);
+            Destroy(_enemy);
+        }
+        else if (EnemyCharacters.Count == 0)
+        {
+            PlayerWin.Invoke(true);
+            Destroy(_player);
+            Destroy(_enemy);
+        }
+        yield return character == null;
     }
 
 }

@@ -2,43 +2,39 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
-[RequireComponent(typeof(Battlefield))]
 public class Player : MonoBehaviour
 {
+    [SerializeField] private Battlefield _battlefield;
+    [SerializeField] private Canvas _playerCanvas;
     private PlayerInput _playrInput;
     private Camera _camera;
     private Character _currentCharacter;
-    private Battlefield _battlefield;
     public event UnityAction<Character> SelectedCharacter;
     private void Awake()
     {
-        _battlefield = GetComponent<Battlefield>();
         _camera = Camera.main;
         _playrInput = new();
         _playrInput.BaseInput.Targeting.performed += Selected_performed;
         _playrInput.BaseInput.Targeting.Enable();
-        _playrInput.BaseInput.Selection.canceled +=cont=> Selection_canceled();
-
-    }
-    private void OnDestroy()
-    {
-        _playrInput.BaseInput.Targeting.performed -= Selected_performed;
-        _playrInput.BaseInput.Selection.canceled -= cont => Selection_canceled();
-        _playrInput.BaseInput.Targeting.Disable();
+        _playrInput.BaseInput.Selection.canceled += cont => Selection_canceled();
     }
 
-    private void OnEnable()
+    public void AttackButton()
     {
+        _playerCanvas.gameObject.SetActive(false);
         _playrInput.BaseInput.Selection.Enable();
     }
-    private void OnDisable()
+    public void SkipButton()
     {
-        _playrInput.BaseInput.Selection.Disable();
+        _playerCanvas.gameObject.SetActive(false);
+        SelectedCharacter?.Invoke(null);
     }
+
     private void Selection_canceled()
     {
-        if (_currentCharacter!=null&& _battlefield.EnemyCharacters.Contains(_currentCharacter))
+        if (_currentCharacter != null && _battlefield.EnemyCharacters.Contains(_currentCharacter))
         {
             SelectedCharacter?.Invoke(_currentCharacter);
         }
@@ -63,5 +59,20 @@ public class Player : MonoBehaviour
             if (_currentCharacter != null) _currentCharacter.Targeting(false);
             _currentCharacter = null;
         }
+    }
+    private void OnDestroy()
+    {
+        _playrInput.BaseInput.Targeting.performed -= Selected_performed;
+        _playrInput.BaseInput.Selection.canceled -= cont => Selection_canceled();
+        _playrInput.BaseInput.Targeting.Disable();
+    }
+
+    private void OnEnable()
+    {
+        _playerCanvas.gameObject.SetActive(true);
+    }
+    private void OnDisable()
+    {
+        _playrInput.BaseInput.Selection.Disable();
     }
 }
